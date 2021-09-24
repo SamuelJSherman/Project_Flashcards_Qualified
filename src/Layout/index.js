@@ -27,6 +27,7 @@ function Layout() {
     return () => {
       abortController.abort();
     };
+	// eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function getDecks() {
@@ -80,6 +81,7 @@ function Layout() {
     ) {
       await deleteCard(id, signal);
       getDecks();
+	  history.push("/");
     }
   }
 

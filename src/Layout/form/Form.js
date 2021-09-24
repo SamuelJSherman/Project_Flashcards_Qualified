@@ -33,6 +33,7 @@ function Form({
     return () => {
       abortController.abort();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function getDeck() {

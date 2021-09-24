@@ -16,6 +16,7 @@ function DeckView({ removeDeck, removeCard, abortController }) {
     return () => {
       abortController.abort();
     };
+	// eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function getDeck() {
