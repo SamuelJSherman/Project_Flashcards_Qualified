@@ -59,6 +59,18 @@
       "back": "hello",
       "id": 13,
       "deckId": 3
+    },
+    {
+      "front": "hola",
+      "back": "hello",
+      "deckId": 3,
+      "id": 14
+    },
+    {
+      "front": "konnichiwa",
+      "back": "hello",
+      "deckId": 3,
+      "id": 15
     }
   ]
 }

@@ -1,125 +1,62 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Switch, Route, useHistory } from "react-router-dom";
-import {
-  listDecks,
-  deleteDeck,
-  createDeck,
-  deleteCard,
-  updateDeck,
-  createCard,
-  updateCard,
-} from "../utils/api/index";
-import Header from "./comp/Header";
-import NotFound from "./error/NotFound";
-import DeckList from "./deck/DeckList";
-import Deck from "./deck/Deck";
-import Form from "./form/Form";
+import React, { useState } from "react";
+import { Switch, Route } from "react-router-dom";
+import Header from "./Header";
+import NotFound from "./NotFound";
+import DeckDisplay from "../Decks/DeckDisplay";
+import DeckView from "../Decks/DeckView";
+import DeckEdit from "../Decks/DeckEdit";
+import DeckStudy from "../Decks/DeckStudy";
+import DeckNew from "../Decks/DeckNew";
+import CardEdit from "../Cards/CardEdit";
+import CardNew from "../Cards/CardNew";
 
 function Layout() {
   const [decks, setDecks] = useState([]);
-  const abortController = new AbortController();
-  const signal = abortController.signal;
-  const history = useHistory();
-
-  useEffect(() => {
-    getDecks();
-
-    return () => {
-      abortController.abort();
-    };
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function getDecks() {
-    try {
-      const response = await listDecks(signal);
-      setDecks(response);
-    } catch (error) {
-      if (error.name !== "AbortError") {
-        throw error;
-      }
-    }
-  }
-
-  async function addDeck(deck) {
-    const created = await createDeck(deck, signal);
-    getDecks();
-    return created.id;
-  }
-
-  async function addCard(card, id) {
-    const created = await createCard(id, card, signal);
-    getDecks();
-    return created.id;
-  }
-
-  async function editDeck(deck) {
-    const edited = await updateDeck(deck, signal);
-    getDecks();
-    return edited.id;
-  }
-
-  async function editCard(card) {
-    const edited = await updateCard(card, signal);
-    getDecks();
-    return edited.id;
-  }
-
-  async function removeDeck(id) {
-    if (
-      window.confirm(`Delete this deck?\n\nYou will not be able to recover it.`)
-    ) {
-      await deleteDeck(id, signal);
-      getDecks();
-      history.push("/");
-    }
-  }
-
-  async function removeCard(id) {
-    if (
-      window.confirm(`Delete this card?\n\nYou will not be able to recover it.`)
-    ) {
-      await deleteCard(id, signal);
-      getDecks();
-	  history.push("/");
-    }
-  }
+  const [deck, setDeck] = useState({});
+  const [cards, setCards] = useState([]);
 
   return (
-    <Fragment>
+    <>
       <Header />
       <div className="container">
         <Switch>
           <Route exact path="/">
-            <DeckList decks={decks} removeDeck={removeDeck} />
+            <DeckDisplay decks={decks} setDecks={setDecks} />
           </Route>
-
           <Route path="/decks/new">
-            <Form
-              type="deck"
-              edit={false}
-              addDeck={addDeck}
-              abortController={abortController}
+            <DeckNew />
+          </Route>
+          <Route exact path="/decks/:deckId">
+            <DeckView
+              deck={deck}
+              setDeck={setDeck}
+              cards={cards}
+              setCards={setCards}
             />
           </Route>
-
-          <Route path="/decks/:deckId/">
-            <Deck
-              editDeck={editDeck}
-              removeDeck={removeDeck}
-              addCard={addCard}
-              editCard={editCard}
-              removeCard={removeCard}
-              abortController={abortController}
+          <Route path="/decks/:deckId/study">
+            <DeckStudy
+              deck={deck}
+              setDeck={setDeck}
+              cards={cards}
+              setCards={setCards}
             />
           </Route>
-
+          <Route path="/decks/:deckId/edit">
+            <DeckEdit />
+          </Route>
+          <Route path="/decks/:deckId/cards/:cardId/edit">
+            <CardEdit deck={deck} setDeck={setDeck} />
+          </Route>
+          <Route path="/decks/:deckId/cards/new">
+            <CardNew deck={deck} setDeck={setDeck} />
+          </Route>
           <Route>
             <NotFound />
           </Route>
         </Switch>
       </div>
-    </Fragment>
+    </>
   );
 }
 
